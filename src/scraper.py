@@ -99,17 +99,17 @@ class Scraper:
         urls = list(set([a.get('href') for a in soup]))
         return urls
 
-    def next_page_exists(self):
-        self.next_button = self._find_element('class_name', 'next_button')
-        return next_button.is_enabled()
-
     def get_n_results(self):
         try:
             n_results = np.int(self._find_element(by='tag_name', 'n_results_field').text.split()[1].replace(',', ''))
             return n_results
         except FileNotFoundError as e:
-            print('job description not found')
+            print('No profiles meeting description')
             return 0
+
+    def next_page_exists(self):
+        self.next_button = self._find_element('class_name', 'next_button')
+        return next_button.is_enabled()
 
     def scrape_profile_urls(self, job_functions):
 
