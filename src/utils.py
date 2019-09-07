@@ -1,37 +1,35 @@
 from src.config import (
     SEARCH_PEOPLE_DEFAULT_URL,
-    SEARCH_JOBS_DEFAULT_URL
+    SEARCH_JOBS_DEFAULT_URL,
+    PARAMS,
 )
 
+
 class Search:
-    def __init__(self):
+    def __init__(self, search_type, **kwargs):
+        self._search_type = f'search.{search_type}'
         self.search_keyword = None
-        self.default_urls = {'Jobs': SEARCH_JOBS_DEFAULT_URL, 'People': SEARCH_PEOPLE_DEFAULT_URL}
+        self.default_urls = {'search.people': SEARCH_PEOPLE_DEFAULT_URL, 'search.jobs': SEARCH_JOBS_DEFAULT_URL}
+        self.filter_settings = {
+            'people': ['search_keywords',
+                       'locations',
+                       'industries',
+                       'schools',
+                       'job_title'],
+            'jobs': None,
+        }
+        self.base_params = PARAMS['search']
+        self.default_url = self.default_url[self._search_type]
+        self.params = PARAMS[self._search_type]
 
-
-
-class Jobs(Search):
-    def __init__(self, location: str, job_type: str, industry: str, job_title: str, loop_over: str = None,
-                 default_url: str = None):
-        super().__init__()
-
-        self.params = {'keyword,'location', 'job_type', 'job_title', 'industry'}
-        self.generate_search_object()
-
-    def generate_search_object(self, params):
-        return self
+    def generate_search_object(self, **kwargs):
+        pass
 
 
 class People(Search):
     def __init__(self, search_keywords, location, industry, job_title, company, default_url=None):
         super().__init__()
-
-        self.search_keywords = search_keywords
-        self.locations = location
-        self.industry = industry
-        self.job_title = job_title
-        self.company = company
-
+        self.filters = self.filter_settings[self.__class__.__name__]
         if not default_url:
             self.default_url = self.default_urls[self.__class__.__name__]
         else:
@@ -39,7 +37,6 @@ class People(Search):
             self.default_url = default_url
 
 
-
-class Companies(object):
-    def __init__(self, **params):
-        pass
+class Jobs(Search):
+    def __init__(self):
+        super().__init__()
