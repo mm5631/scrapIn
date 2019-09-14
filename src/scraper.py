@@ -1,15 +1,16 @@
 import logging
 import time
 import os
-# from bs4 import BeautifulSoup
+import copy
+from bs4 import BeautifulSoup
 from selenium import webdriver
-# from logger import get_logger
 import getpass
 from src import utils
 from src.config import (
     CHROMEDRIVER_FILEPATH,
     PARAMS,
 )
+import inspect
 
 logger = logging.getLogger('scraper')
 logging.basicConfig(level=logging.INFO)
@@ -17,11 +18,11 @@ logging.basicConfig(level=logging.INFO)
 
 class Loader(object):
     def __init__(self, chromedriver_filepath=CHROMEDRIVER_FILEPATH, params=PARAMS):
+        logger.info('Loading parameters..')
         self.authenticate_params = params['authenticate']
         self.search_params = params['search']
         self.chromedriver_filepath = chromedriver_filepath
         assert os.path.isfile(self.chromedriver_filepath), 'Please add the chromedriver file to repository root'
-        logger.info('Loading parameters..')
 
 
 class Authenticator(Loader):
@@ -56,8 +57,21 @@ class Authenticator(Loader):
         pass
 
 
+# def find_element(self, func, config):
+#     try:
+#         response = self.driver.find_element(config[0], config[1])
+#         self.fail = 0
+#         return response
+#     except Exception as e:
+#         self.fail += 1
+#         if self.fail <= 2:
+#             time.sleep(2)
+#             self.make_request(func, config)
+#             self.fail = 0
+#         else:
+#             logger.info(f'Could not retrieve element {config}, error:\n {e}')
 class Scraper(object):
-    def __init__(self, authenticator):
+    def __init__(self, authenticator, timeout=2):
         assert isinstance(authenticator, Authenticator), 'Please instantiate an Authenticator object'
         self.driver = authenticator.login()
         self.results = []
@@ -66,14 +80,51 @@ class Scraper(object):
         """Request handler"""
         pass
 
-    def search_people(self, *kwargs):
-        search_object = utils.Search(search_type='people', *kwargs)
-        return search_object
-        # results = self._search(search_object)
-        # return results
+    # def _search(self):
+    # handle text forms
+    # handle selectable filters
+    # handle next page
 
-    def search_jobs(self):
-        pass
+    def _grab_results(self, factory):
+        time.sleep(1)
+        results = self.driver.find_element(factory.main_params['search_container'][0],
+                                           factory.main_params['search_container'][1]).get_attribute('outerHTML')
+        soup = BeautifulSoup(results, 'html.parser').find_all('a')
+        urls = list(set([a.get('href') for a in soup]))
+        return urls
+
+    def _search(self, factory):
+        time.sleep(2)
+        for param, config in factory.search_object.items():
+            all_filters_button = self.driver.find_element(factory.main_params['all_filters_button'][0],
+                                                          factory.main_params['all_filters_button'][1])
+            all_filters_button.click()
+
+            element = self.driver.find_element(config['selenium_location'][0], config['selenium_location'][1])
+            element.send_keys(config['input_value'])
+
+            apply_button = self.driver.find_element(factory.main_params['apply_button'][0],
+                                                    factory.main_params['apply_button'][1])
+            apply_button.click()
+            self._grab_results(factory)
+            # select or continue
+
+    def search_people(self, search_keywords=None, location=None, industry=None, job_title=None, company=None,
+                      default_url=None):
+        factory = utils.Search(search_type='people', search_keywords=search_keywords, location=location,
+                               industry=industry, job_title=job_title, company=company, default_url=default_url)
+        logger.info(f'Passed following parameters: {factory.search_object}')
+        self.driver.get(factory.default_url)
+        # enter keywords
+        # blah
+        self._search(factory)
+        urls = self._grab_results(factory)
+        return urls
+
+    # def search_jobs(self):
+    #     kwargs = deepcopy(locals())
+    #     search_object = utils.Search(search_type='jobs', **kwargs)
+    #     return search_object
 
     def augment(self):
         pass

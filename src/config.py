@@ -3,7 +3,7 @@ import os
 # Chromedriver executable
 CHROMEDRIVER_FILEPATH = os.path.join(os.path.dirname(__file__), '../chromedriver')
 
-# Default URLS used by search methods
+# Default URLS used for search methods
 SEARCH_PEOPLE_DEFAULT_URL = 'https://www.linkedin.com/people/search/'
 SEARCH_JOBS_DEFAULT_URL = 'https://www.linkedin.com/jobs/search/'
 
@@ -18,17 +18,31 @@ PARAMS = {
 
     # Search page
     'search': {
-        'filters_button': 'search-filters-bar__all-filters.flex-shrink-zero.mr3.artdeco-button.artdeco-button--muted.artdeco-button--2.artdeco-button--tertiary.ember-view',
-        'job_title_field': 'search-advanced-title',
-        'apply_button': 'search-advanced-facets__button--apply.ml4.mr2.artdeco-button.artdeco-button--3.artdeco-button--primary.ember-view',
-        'previous_button': 'artdeco-pagination__button--previous',
-        'next_button': 'artdeco-pagination__button--next',
-        'search_container': '.core-rail',
-        'n_results_field': 'h3'},
+        # 'default_url': {
+        #     'search.people': SEARCH_PEOPLE_DEFAULT_URL,
+        #     'search.jobs': SEARCH_JOBS_DEFAULT_URL
+        # },
+        'search_field': ['xpath', "//input[contains(@class, 'search-global-typeahead')]"],
+        'all_filters_button': ['xpath', "//button[@data-control-name='all_filters']"],
+        'apply_button': ['xpath', "//button[@data-control-name='all_filters_apply']"],
+        'search_container': ['css selector', '.core-rail']
+
+        # 'n_results_field': 'h3'
+    },
+
     # People-specific search page
-    'search.people': {},
+    'search.people': {
+        'default_url': SEARCH_PEOPLE_DEFAULT_URL,
+        'location': ['xpath', "//input[contains(@placeholder, 'location')]"],
+        'industry': ['xpath', "//input[contains(@placeholder, 'industry')]"],
+        'current_company': ['xpath', "//input[contains(@placeholder, 'company')]"],
+
+        'job_title': ['xpath', "//input[@id='search-advanced-title']"],  # text
+    },
     # Job-specific search page
-    'search.jobs': {},
+    'search.jobs': {
+        'default_url': SEARCH_JOBS_DEFAULT_URL
+    },
 }
 
 

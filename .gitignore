@@ -203,3 +203,6 @@ fabric.properties
 *.iml
 out
 gen
+
+# Custom
+*.secret
