@@ -12,13 +12,14 @@ class Search(object):
 
         self.default_url = PARAMS[self._search_type]['default_url']
 
-        self.main_params = PARAMS['search']
-        self.secondary_params = PARAMS[self._search_type]
+        self.params = PARAMS['search']
+        self.params.update(PARAMS[self._search_type])   # print(self.params)
+        self.default_url = self.params['default_url']
+        # self.secondary_params = PARAMS[self._search_type]
         self.selected_params = kwargs
 
         self._generate_search_object()
 
     def _generate_search_object(self):
         self.search_object = {
-            k: {'selenium_location': self.secondary_params[k],
-                'input_value': v} for k, v in self.selected_params.items() if v}
+            k: self.params[k] + [v] for k, v in self.selected_params.items() if v}
