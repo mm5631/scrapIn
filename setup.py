@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='linkedin_scraper',
+    name='scrapIn',
     version='1.0',
     packages=['src'],
-    url='https://github.com/maximemerabet/linkedin_scraper',
+    url='https://github.com/maximemerabet/scrapIn',
     license='',
     author='Maxime Merabet',
     author_email='',

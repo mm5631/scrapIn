@@ -124,15 +124,22 @@ class Scraper(object):
                     self._parse_results(results, urls)
                 self._parse_results(results, urls)
 
-            # urls = list(filter(lambda x: '/in/' in x, urls))
+            urls = list(filter(lambda x: '/in/' in x, urls))
             return urls
 
     def _fetch_urls(self, factory):
         time.sleep(2)
         self.apply_filters(factory)
         urls = self.grab_results(factory)
-        urls = list(filter(lambda x: '/in/' in x, urls))
+        logger.info('Retrieved profile urls')
         return urls
+
+    def query_results(self, urls):
+        for url in urls:
+
+
+
+
 
     def search_people(self, search_keywords=None, location=None, industry=None, job_title=None, company=None,
                       default_url=None):
