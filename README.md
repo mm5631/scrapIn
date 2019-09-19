@@ -13,10 +13,9 @@ git clone git@github.com:maximemerabet/scrapIn.git
 mkvirtualenv .env -p python3
 pip install .
 ```
+If the latter command does not work, try pip instal -r requirements.txt
 
-``
-``
-
-
-
+#### IMPORTANT:
+You will need to download the correct chrome webdriver for your OS (Windows/Mac/Linux)
+The file needs to be located at `scrapIn/.`
 
