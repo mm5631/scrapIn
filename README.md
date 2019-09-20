@@ -36,9 +36,8 @@ git clone git@github.com:maximemerabet/scrapIn.git
 cd scrapIn
 python3 -m venv .env
 source .env/bin/activate
-pip install .
+pip install -r requirements
 ```
-If the latter command does not work, try `pip install -r requirements.txt`
 
 ### How to use:
 
