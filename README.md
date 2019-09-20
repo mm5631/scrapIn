@@ -1,24 +1,24 @@
 # ScrapIn
-
 This module is a selenium wrapper tailored to searching people or jobs on linkedin given a set of criteria.
 
 ### System
+
+
 As of: 2019-09-20 
 
-CPython 3.7.3
-IPython 7.6.1
+CPython 3.7.3  
 
-numpy 1.16.4
-pandas 0.24.2
-selenium 3.141.0
+numpy 1.16.4\
+pandas 0.24.2\
+selenium 3.141.0\
 bs4 4.7.1
 
-compiler   : GCC 7.3.0
-system     : Linux
-release    : 5.0.0-29-generic
-machine    : x86_64
-processor  : x86_64
-CPU cores  : 12
+compiler   : GCC 7.3.0\
+system     : Linux\
+release    : 5.0.0-29-generic\
+machine    : x86_64\
+processor  : x86_64\
+CPU cores  : 12\
 interpreter: 64bit
 
 
@@ -40,5 +40,6 @@ pip install -r requirements
 ```
 
 ### How to use:
+Refer to `scrapIn/examples/*`
 
 
