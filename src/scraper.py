@@ -3,7 +3,7 @@ import time
 import os
 import numpy as np
 import pandas as pd
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import getpass
@@ -35,7 +35,7 @@ def element_handler(func):
 
 class Loader(object):
     def __init__(self, chromedriver_filepath=CHROMEDRIVER_FILEPATH, params=PARAMS):
-        logger.info('Loading parameters..')
+        logger.info('Loading parameters..\n')
         self.authenticate_params = params['authenticate']
         self.search_params = params['search']
         self.chromedriver_filepath = chromedriver_filepath
@@ -54,7 +54,7 @@ class Authenticator(Loader):
         self.driver = None
 
     def login(self):
-        logger.info('Submitting credentials and loging-in')
+        logger.info('Submitting credentials and logging-in\n')
         self.driver = webdriver.Chrome(self.chromedriver_filepath)
 
         self.driver.maximize_window()
@@ -116,9 +116,9 @@ class Scraper(object):
         apply_button.click()
 
     @staticmethod
-    def _grab_urls(search_container):
+    def _grab_urls(search_container, factory):
         urls = []
-        url_container = search_container.find_elements('xpath', "li/div/div/div[contains(@class, 'info')]/a[@href]")
+        url_container = search_container.find_elements(factory.params['url_container'][0], factory.params['url_container'][1])
         for url in url_container:
             href = url.get_property('href')
             if '/in/' in href:
@@ -128,25 +128,24 @@ class Scraper(object):
         return urls
 
     @staticmethod
-    def _grab_names(search_container):
-        names_container = search_container.find_elements('xpath', "li//span[contains(@class, 'actor-name')]")
-        names = [name.text for name in names_container]
+    def _grab_names(search_container, factory):
+        name_container = search_container.find_elements(factory.params['name_container'][0], factory.params['name_container'][1])
+        names = [name.text for name in name_container]
         return names
 
     @staticmethod
-    def _grab_job_location(search_container):
-        jobs_location_container = search_container.find_elements('xpath', "//p[contains(@class, 'subline')]/span[@dir]")
+    def _grab_job_location(search_container, factory):
+        jobs_location_container = search_container.find_elements(factory.params['job_location_container'][0], factory.params['job_location_container'][1])
         job_locations = [i.text for i in jobs_location_container]
         job_locations = np.reshape(job_locations, (np.int(len(jobs_location_container) / 2), 2))
         return job_locations
 
-    def _parse_results(self):
-        search_container = self.driver.find_element('xpath', "//ul[contains(@class, 'search-result')]")
+    def _parse_results(self, factory):
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        urls = self._grab_urls(search_container)
-        names = self._grab_names(search_container)
-        job_location = self._grab_job_location(search_container)
-        current_df = pd.DataFrame(columns=['URL', 'Name', 'Title', 'Location'])
+        search_container = self.find_element(factory.params['search_container'][0], factory.params['search_container'][1])
+        urls = self._grab_urls(search_container, factory)
+        names = self._grab_names(search_container, factory)
+        job_location = self._grab_job_location(search_container, factory)
         current_df = pd.DataFrame(columns=['URL', 'Name', 'Title', 'Location'])
         current_df['URL'] = urls
         current_df['Name'] = names
@@ -157,14 +156,16 @@ class Scraper(object):
         time.sleep(1)
         df = pd.DataFrame(columns=['URL', 'Name', 'Title', 'Location'])
 
-        core_rail = self.find_element(factory.params['search_container'][0],
-                                      factory.params['search_container'][1])
+        core_rail = self.find_element(factory.params['core_rail'][0],
+                                      factory.params['core_rail'][1])
 
         if core_rail.text.startswith('No results'):
-            logger.info(f'No results for search {factory.search_object}')
+            logger.info(f'No results for search {factory.search_object}\n')
             pass
         else:
-            df = pd.concat([df, self._parse_results()])
+            n_profiles = core_rail.text.split('\n')[0].replace('Showing', 'Query returned')
+            logger.info(f"{n_profiles}\n")
+            df = pd.concat([df, self._parse_results(factory=factory)])
             is_next_button = self.driver.find_elements(factory.params['next_button'][0],
                                                        factory.params['next_button'][1])
             if len(is_next_button) == 0:
@@ -177,8 +178,8 @@ class Scraper(object):
                     # self.driver.implicitly_wait(0.5)
                     next_button.click()
                     time.sleep(1.5)
-                    df = pd.concat([df, self._parse_results()])
-                df = pd.concat([df, self._parse_results()])
+                    df = pd.concat([df, self._parse_results(factory=factory)])
+                df = pd.concat([df, self._parse_results(factory=factory)])
 
             return df
 
@@ -197,7 +198,7 @@ class Scraper(object):
         factory = utils.Search(search_type='people', search_keywords=search_keywords, location=location,
                                industry=industry, job_title=job_title, current_company=current_company,
                                default_url=default_url)
-        logger.info(f'Passed following parameters: {factory.search_object}')
+        logger.info(f'Passed following parameters: {factory.search_object}\n')
         self.driver.get(factory.default_url)
         df = self._fetch_profiles(factory)
         return df

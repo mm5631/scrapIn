@@ -18,16 +18,16 @@ PARAMS = {
 
     # Search page
     'search': {
-        # 'default_url': {
-        #     'search.people': SEARCH_PEOPLE_DEFAULT_URL,
-        #     'search.jobs': SEARCH_JOBS_DEFAULT_URL
-        # },
         'search_field': ['xpath', "//input[contains(@class, 'search-global-typeahead')]"],
         'all_filters_button': ['xpath', "//button[@data-control-name='all_filters']"],
         'apply_button': ['xpath', "//button[@data-control-name='all_filters_apply']"],
-        'search_container': ['css selector', '.core-rail'],
-        'core_results': ['xpath', "//div[contains(@class, 'search-result__info')]"],
-        'profile_data': ['xpath', "//span[contains(@class, 'actor-name')]"],
+
+        'core_rail': ['css selector', '.core-rail'],
+        'search_container': ['xpath', "//ul[contains(@class, 'search-result')]"],
+        'url_container': ['xpath', "//div[contains(@class, 'info')]/a[@href]"],
+        'name_container': ['xpath', "li//span[contains(@class, 'actor-name')]"],
+        'job_location_container': ['xpath', "//p[contains(@class, 'subline')]/span[@dir]"],
+
         'next_button': ['xpath', "//button[@aria-label='Next']"]
     },
 
