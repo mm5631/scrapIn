@@ -39,6 +39,15 @@ source .env/bin/activate
 pip install -r requirements
 ```
 
+You will also need to download the chromedriver corresponding to your OS and chrome version.\
+These can be found [here](https://sites.google.com/a/chromium.org/chromedriver/downloads).
+Once downloaded, please move the executable to `scrapIn/.` and run the following command: `chmod +x chromedriver`
+
+(Please note that you can use selenium's recommended driver location but will need to overwrite the chromedriver path in `config.py` or overwrite the parameter in `scraper.Authenticator.login`)
+
+ 
+
+
 ### How to use:
 Refer to `scrapIn/examples/*`
 

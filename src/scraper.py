@@ -3,7 +3,6 @@ import time
 import os
 import numpy as np
 import pandas as pd
-# from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import getpass
@@ -56,11 +55,10 @@ class Authenticator(Loader):
     def login(self):
         logger.info('Submitting credentials and logging-in\n')
         self.driver = webdriver.Chrome(self.chromedriver_filepath)
-
+        self.driver.implicitly_wait(5)
         self.driver.maximize_window()
         self.driver.get('https://www.linkedin.com')
         time.sleep(2)
-        self.driver.implicitly_wait(1)
 
         username_field = self.driver.find_element(self.authenticate_params['username_field'][0],
                                                   self.authenticate_params['username_field'][1])
@@ -74,10 +72,6 @@ class Authenticator(Loader):
         signin_button.click()
 
         return self.driver
-        # call destructor ?
-
-    def __del__(self):
-        pass
 
 
 class Scraper(object):
@@ -118,7 +112,8 @@ class Scraper(object):
     @staticmethod
     def _grab_urls(search_container, factory):
         urls = []
-        url_container = search_container.find_elements(factory.params['url_container'][0], factory.params['url_container'][1])
+        url_container = search_container.find_elements(factory.params['url_container'][0],
+                                                       factory.params['url_container'][1])
         for url in url_container:
             href = url.get_property('href')
             if '/in/' in href:
@@ -129,20 +124,23 @@ class Scraper(object):
 
     @staticmethod
     def _grab_names(search_container, factory):
-        name_container = search_container.find_elements(factory.params['name_container'][0], factory.params['name_container'][1])
+        name_container = search_container.find_elements(factory.params['name_container'][0],
+                                                        factory.params['name_container'][1])
         names = [name.text for name in name_container]
         return names
 
     @staticmethod
     def _grab_job_location(search_container, factory):
-        jobs_location_container = search_container.find_elements(factory.params['job_location_container'][0], factory.params['job_location_container'][1])
+        jobs_location_container = search_container.find_elements(factory.params['job_location_container'][0],
+                                                                 factory.params['job_location_container'][1])
         job_locations = [i.text for i in jobs_location_container]
         job_locations = np.reshape(job_locations, (np.int(len(jobs_location_container) / 2), 2))
         return job_locations
 
     def _parse_results(self, factory):
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        search_container = self.find_element(factory.params['search_container'][0], factory.params['search_container'][1])
+        search_container = self.find_element(factory.params['search_container'][0],
+                                             factory.params['search_container'][1])
         urls = self._grab_urls(search_container, factory)
         names = self._grab_names(search_container, factory)
         job_location = self._grab_job_location(search_container, factory)
@@ -175,7 +173,6 @@ class Scraper(object):
                 next_button = is_next_button[0]
                 while next_button.is_enabled():
                     self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    # self.driver.implicitly_wait(0.5)
                     next_button.click()
                     time.sleep(1.5)
                     df = pd.concat([df, self._parse_results(factory=factory)])
@@ -189,9 +186,6 @@ class Scraper(object):
         df = self.grab_results(factory)
         logger.info('Retrieved profiles')
         return df
-
-    def query_results(self, urls):
-        pass
 
     def search_people(self, search_keywords=None, location=None, industry=None, job_title=None, current_company=None,
                       default_url=None):
