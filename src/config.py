@@ -11,7 +11,6 @@ SEARCH_JOBS_DEFAULT_URL = 'https://www.linkedin.com/jobs/search/'
 PARAMS = {
     # Login page
     'authenticate': {
-        'sign_in_card': ['xpath', "//section[@class='sign-in-card']"],
         'username_field': ['name', 'session_key'],
         'password_field': ['name', 'session_password'],
         'signin_button': ['xpath', "//button[contains(text(), 'Sign in')]"]
