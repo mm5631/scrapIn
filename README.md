@@ -21,12 +21,6 @@ processor  : x86_64\
 CPU cores  : 12\
 interpreter: 64bit
 
-
-### Before you get started
-You will need to download the correct chrome webdriver for your OS (Windows/Mac/Linux)
-These chromedriver can be located [here](https://sites.google.com/a/chromium.org/chromedriver/downloads)
-The file needs to be located at ```scrapIn/.```
-
 ### Setup
 To get started, run the following commands:
 
