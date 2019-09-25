@@ -104,7 +104,11 @@ class Scraper(object):
             if param in ['job_title']:
                 self._absolute_filter(element, config[2])
             else:
-                self._fuzzy_filter(element, config[2])
+                if isinstance(config[2], list):
+                    for value in config[2]:
+                        self._fuzzy_filter(element, value)
+                else:
+                    self._fuzzy_filter(element, config[2])
 
         apply_button = self.find_element(factory.params['apply_button'][0], factory.params['apply_button'][1])
         apply_button.click()
@@ -187,11 +191,35 @@ class Scraper(object):
         logger.info('Retrieved profiles')
         return df
 
-    def search_people(self, search_keywords=None, location=None, industry=None, job_title=None, current_company=None,
+    def search_people(self,
+                      search_keywords=None, location=None, industry=None, job_title=None, current_company=None,
                       default_url=None):
+        """Returns a dataframe of available profiles matching criteria, private profile are marked with '#'
+
+        Parameters
+        ----------
+        search_keywords: str
+            Default search keyword to be used.
+        location: [str, list]
+            Locations to be considered (can be multiple).
+        industry: [str, list]
+            Industries to be considered (can be multiple).
+        job_title: str
+            Specific job title to search for. For multiple selection, a for loop outside the function is necessary.
+        current_company: [str, list]
+            Current employer to be considered (can be multiple).
+        default_url: str
+            Default URL to use when applying filters and extracting results.
+
+        Returns
+        -------
+        DataFrame of retrieved profiles (columns=['URL', 'Name', 'Title', 'Location']).
+        """
+
         factory = utils.Search(search_type='people', search_keywords=search_keywords, location=location,
                                industry=industry, job_title=job_title, current_company=current_company,
                                default_url=default_url)
+        assert isinstance(search_keywords, (str, type(None))) & isinstance(default_url, (str, type(None))), 'Keywords and default URL must be strings'
         logger.info(f'Passed following parameters: {factory.search_object}\n')
         self.driver.get(factory.default_url)
         df = self._fetch_profiles(factory)
