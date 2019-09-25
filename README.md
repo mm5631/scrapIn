@@ -43,11 +43,11 @@ Once downloaded, please move the executable to `scrapIn/.` and run the following
 
 
 ### How to use:
-The following is an example code for a people-specific search (can be found [here](../examples/search_people.ipynb))
+The following is an example code for a people-specific search (notebook demo can be found [here](../examples/search_people.ipynb))
 
 ```
-# Append to python, import
-from scraper import Authenticator, Scraper
+# Append to python path and import
+from src.scraper import Authenticator, Scraper
 
 # Credential prompt
 auth = Authenticator() 
@@ -55,7 +55,7 @@ auth = Authenticator()
 # Instantiate scraper object
 scraper = Scraper(authenticator=auth)
 
-# Execute search (return DataFrame)
+# Execute search (returns DataFrame)
 people_search = scraper.search_people(job_title='Executive Chef',
                                       location=['London, 'Manchester'],
                                       industry='Hospitality')
