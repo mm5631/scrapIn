@@ -1,6 +1,10 @@
 # ScrapIn
 This module is a selenium wrapper tailored to searching people or jobs on linkedin given a set of criteria.
 
+**WARNING:** 
+While supposedly legal to scrape linkedin (see this [legal proceeding](https://www.reuters.com/article/us-microsoft-linkedin-ruling-idUSKCN1AU2BV?feedType=RSS&feedName=technologyNews)), I do not take any responsibility for any retaliation Linkedin might enact against the user-account associated with the use of this package.
+
+
 ### System
 
 
@@ -30,7 +34,7 @@ git clone git@github.com:maximemerabet/scrapIn.git
 cd scrapIn
 python3 -m venv .env
 source .env/bin/activate
-pip install -r requirements
+pip install -r requirements.txt
 ```
 
 You will also need to download the chromedriver corresponding to your OS and chrome version.\
@@ -61,5 +65,12 @@ people_search = scraper.search_people(job_title='Executive Chef',
                                       industry='Hospitality')
 
 ```
+
+
+### TODO
+- Add deep-search functionality (Given a list of profile URL, retrieve more detailed information)
+- Write up `test_config` to test for the presence of required elements on the linkedin web-page
+- (Optional) Add functionality to execute other types of search (i.e. jobs, etc.)
+
 
 
